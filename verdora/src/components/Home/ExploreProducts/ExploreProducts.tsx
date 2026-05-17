@@ -1,7 +1,6 @@
 // ExploreProducts.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
 import './ExploreProducts.css';
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
@@ -10,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ClipLoader } from "react-spinners";
 import { IoHeartOutline, IoHeart } from "react-icons/io5";
 import { loadWishlist, saveWishlist } from "../../../utils/wishlistStorage";
+import { supabase } from "../../../SupbaseClient/SupbaseClint";
 
 interface Product {
     id: number;
@@ -22,8 +22,17 @@ interface Product {
 }
 
 const fetchProducts = async (): Promise<Product[]> => {
-    const res = await axios.get("http://localhost:5005/products");
-    return res.data;
+    const { data, error } = await supabase
+        .from("products")
+        .select("*");
+
+    if (error) {
+        console.error("Error fetching products:", error);
+        throw new Error(error.message);
+    }
+
+    
+    return (data || []).map(p => ({ ...p, id: p.id })); 
 };
 
 const ExploreProducts: React.FC = () => {

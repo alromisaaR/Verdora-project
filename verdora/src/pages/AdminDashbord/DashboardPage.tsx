@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import "../../styles/global.css"
 import { TrendingUp, Users, Package, BarChart3, DollarSign, Leaf } from "lucide-react";
 import {
@@ -19,6 +18,8 @@ import {
   Cell,
 } from "recharts";
 import "./DashboardPage.css";
+import { supabase } from "../../SupbaseClient/SupbaseClint";
+
 
 const DashboardPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -27,22 +28,30 @@ const DashboardPage: React.FC = () => {
 
   // Fetch Data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [usersRes, ordersRes, productsRes] = await Promise.all([
-          axios.get("http://localhost:5005/users"),
-          axios.get("http://localhost:5005/orders"),
-          axios.get("http://localhost:5005/products"),
-        ]);
-        setUsers(usersRes.data);
-        setOrders(ordersRes.data);
-        setProducts(productsRes.data);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+  const fetchData = async () => {
+    try {
+      const [usersResult, ordersResult, productsResult] = await Promise.all([
+        supabase.from("users").select("*"),
+        supabase.from("orders").select("*"),
+        supabase.from("products").select("*"),
+      ]);
+
+      if (usersResult.error) throw usersResult.error;
+      if (ordersResult.error) throw ordersResult.error;
+      if (productsResult.error) throw productsResult.error;
+
+      setUsers(usersResult.data || []);
+      setOrders(ordersResult.data || []);
+      setProducts(productsResult.data || []);
+
+      console.log("Dashboard data loaded successfully!");
+    } catch (error) {
+      console.error("Error fetching dashboard data from Supabase:", error);
+    }
+  };
+
+  fetchData();
+}, []);
 
   // KPI Calculations
   const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);

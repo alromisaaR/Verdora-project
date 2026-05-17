@@ -7,7 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import "../../styles/global.css";
 import { Helmet } from "react-helmet";
-import axios from "axios";
+
+import { createClient } from "@supabase/supabase-js";
+ 
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 interface FormValues {
   name: string;
@@ -65,27 +71,46 @@ export default function SignUp() {
   const { register, handleSubmit, formState } = form;
 
   const handleRegister: SubmitHandler<FormValues> = async (values) => {
-    setIsLoading(true);
+  setIsLoading(true);
+  try {
+    const { termsAccepted, rePassword, ...userData } = values;
+    const cleanEmail = userData.email.toLowerCase().trim();
 
-    try {
-      const { termsAccepted, rePassword, ...userData } = values;
+    const { data: existing, error: checkError } = await supabase
+      .from("users")
+      .select("id") 
+      .eq("email", cleanEmail);
 
-      const response = await axios.post("http://localhost:5005/users", {
-        ...userData,
-        role: "user",
-      });
-
-      toast.success(`Registration successful! Welcome ${response.data.name}`);
-      navigate("/auth/signin");
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message ||
-          "Something went wrong during registration"
-      );
-    } finally {
-      setIsLoading(false);
+    if (checkError) {
+      console.error("خطأ أثناء فحص الإيميل من سوبابيز:", checkError);
+      throw checkError;
     }
-  };
+
+    if (Array.isArray(existing) && existing.length > 0) {
+      toast.error("Email already exists");
+      setIsLoading(false); 
+      return; 
+    }
+
+    const { data: newData, error: insertError } = await supabase
+      .from("users")
+      .insert([{ ...userData, email: cleanEmail, role: "user", resetCode: null }])
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+
+    toast.success(`Registration successful! Welcome ${newData.name}`);
+    navigate("/auth/signin");
+
+  } catch (error: any) {
+    console.error("تفاصيل الخطأ الكاملة:", error);
+    toast.error(error.message || "Something went wrong during registration");
+  } finally {
+    setIsLoading(false);
+  }
+};
+ 
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import type { Product } from "../../Types/Products";
+import { supabase } from "../../SupbaseClient/SupbaseClint";
 
 interface ProductsState {
   products: Product[];
@@ -19,21 +19,22 @@ export const fetchProducts = createAsyncThunk<Product[]>(
   "products/fetchProducts",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:5005/products");
-      
-      console.log("API Response:", response.data);
-      
-      
-      const productsWithStringIds = response.data.map((product: any) => ({
+      const { data, error } = await supabase
+        .from("products")
+        .select("*");
+
+      if (error) throw error;
+
+      console.log("Supabase Raw Data:", data);
+
+      const productsWithStringIds = (data || []).map((product: any) => ({
         ...product,
         id: String(product.id) 
       }));
 
-      console.log("Products with string IDs:", productsWithStringIds.map(p => ({ id: p.id, name: p.name })));
-      
       return productsWithStringIds;
     } catch (error: any) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching products from Supabase:", error);
       return rejectWithValue(error.message || "Failed to load products");
     }
   }

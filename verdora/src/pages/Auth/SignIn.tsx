@@ -7,9 +7,9 @@ import { toast } from "react-hot-toast";
 import { Helmet } from "react-helmet";
 import authImg from "../../assets/download (6).jpeg";
 import "../../styles/global.css";
-import axios from "axios";
 import { useDispatch } from "react-redux";
 import { updateCartForUser } from "../../redux/slices/cartSlice"; 
+import { supabase } from "../../SupbaseClient/SupbaseClint";
 
 interface SignInFormValues {
   email: string;
@@ -37,21 +37,23 @@ export default function SignIn({ onLogin }: SignInProps) {
 
   const { register, handleSubmit, formState } = form;
 
-  const onSubmit: SubmitHandler<SignInFormValues> = async (values) => {
+ const onSubmit: SubmitHandler<SignInFormValues> = async (values) => {
     setIsLoading(true);
     try {
-      const response = await axios.get("http://localhost:5005/users", {
-        params: { email: values.email },
-      });
+      const { data: user, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", values.email.toLowerCase().trim())
+        .eq("password", values.password) 
+        .single(); 
 
-      const user = response.data[0];
-      if (!user) throw new Error("Email not registered");
-      if (user.password !== values.password)
-        throw new Error("Incorrect password");
+      if (error || !user) {
+        throw new Error("Invalid email or password");
+      }
 
       const token = `mock-token-${user.id}-${Date.now()}`;
+      
       localStorage.setItem("token", token);
-
       localStorage.setItem("loggedInUser", JSON.stringify(user));
       localStorage.setItem("userName", user.name);
       localStorage.setItem("userRole", user.role);
@@ -63,14 +65,20 @@ export default function SignIn({ onLogin }: SignInProps) {
 
       toast.success(`Welcome back, ${user.name}!`);
 
-      if (user.role === "admin") navigate("/admin", { replace: true });
-      else navigate("/home", { replace: true });
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/home", { replace: true });
+      }
+
     } catch (error: any) {
       toast.error(error.message || "Sign in failed");
     } finally {
       setIsLoading(false);
     }
   };
+
+ 
 
   return (
     <>

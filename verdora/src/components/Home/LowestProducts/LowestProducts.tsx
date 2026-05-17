@@ -5,12 +5,13 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { ClipLoader } from "react-spinners";
 import { addToCart } from "../../../redux/slices/cartSlice";
 import { IoHeartOutline, IoHeart } from "react-icons/io5";
 import { loadWishlist, saveWishlist } from "../../../utils/wishlistStorage";
 import "./LowestProducts.css";
+import { supabase } from "./../../../SupbaseClient/SupbaseClint";
+
 
 interface Product {
     id: number;
@@ -23,14 +24,25 @@ interface Product {
 }
 
 const fetchProducts = async (): Promise<Product[]> => {
-    const res = await axios.get("http://localhost:5005/products");
-    const products = res.data;
+    const { data, error } = await supabase
+        .from("products")
+        .select("*");
+
+    if (error) {
+        console.error("Error fetching products:", error);
+        throw new Error(error.message);
+    }
+
+    const products = data || [];
+
 
     const sorted = products
-        .filter((p: Product) => p.price)
-        .map((p: Product) => ({
+        .filter((p: any) => p.price) 
+        .map((p: any) => ({
             ...p,
-            numericPrice: parseFloat(p.price.replace(" EGP", "")),
+            numericPrice: typeof p.price === 'string' 
+                ? parseFloat(p.price.replace(/[^\d.]/g, "")) 
+                : p.price,
         }))
         .sort((a: any, b: any) => a.numericPrice - b.numericPrice);
 

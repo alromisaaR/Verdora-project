@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaEdit, FaTrash, FaPlusCircle, FaTimes, FaUser, FaShoppingCart, FaStar, FaSearch, FaUsers } from "react-icons/fa";
 import * as yup from "yup";
 import "../../styles/global.css"
+import { supabase } from "../../SupbaseClient/SupbaseClint";
+
 
 interface UserType {
   id: number;
@@ -31,39 +33,56 @@ const userSchema = yup.object({
     .required("Role is required")
 });
 
-const API_BASE = "http://localhost:5005";
-
 const fetchUsers = async (): Promise<UserType[]> => {
-  const res = await fetch(`${API_BASE}/users`);
-  if (!res.ok) throw new Error("Failed to fetch users");
-  return res.json();
+  const { data, error } = await supabase
+    .from("users")
+    .select("*");
+
+  if (error) throw new Error(error.message);
+  return data || [];
 };
 
-const deleteUser = async (id: number): Promise<void> => {
-  const res = await fetch(`${API_BASE}/users/${id}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) throw new Error("Failed to delete user");
+const deleteUser = async (id: string | number): Promise<void> => {
+  const { error } = await supabase
+    .from("users")
+    .delete()
+    .eq("id", id); 
+
+  if (error) throw new Error(error.message);
 };
 
 const updateUser = async (user: UserType): Promise<UserType> => {
-  const res = await fetch(`${API_BASE}/users/${user.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(user),
-  });
-  if (!res.ok) throw new Error("Failed to update user");
-  return res.json();
+  const { data, error } = await supabase
+    .from("users")
+    .update({ 
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      phone: user.phone
+    })
+    .eq("id", user.id)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
 };
 
 const createUser = async (user: NewUser): Promise<UserType> => {
-  const res = await fetch(`${API_BASE}/users`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(user),
-  });
-  if (!res.ok) throw new Error("Failed to create user");
-  return res.json();
+  const { data, error } = await supabase
+    .from("users")
+    .insert([
+      { 
+        ...user,
+        email: user.email.toLowerCase().trim(),
+        role: user.role || "user"
+      }
+    ])
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
 };
 
 const PAGE_SIZE = 5;

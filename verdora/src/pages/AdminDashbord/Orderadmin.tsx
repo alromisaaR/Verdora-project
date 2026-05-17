@@ -4,6 +4,8 @@ import type { AppDispatch } from "../../redux/store";
 import { updateOrderStatus } from "../../redux/slices/ordersSlice";
 import { Search, RefreshCw, MoreVertical, Check, X, Truck, Package, Clock, Settings, Trash2 } from "lucide-react";
 import "./Orderadmin.css";
+import { supabase } from "../../SupbaseClient/SupbaseClint";
+
 
 interface Order {
   id: string;
@@ -37,26 +39,37 @@ const Orderadmin: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("http://localhost:5005/orders");
-      if (response.ok) {
-        const data = await response.json();
-        setOrders(data);
-      } else {
-        setOrders([]);
-      }
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-      setOrders([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("orderDate", { ascending: false });
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (error) {
+      console.error("Supabase Error:", error.message);
+      setOrders([]);
+      return;
+    }
+
+    if (data) {
+      setOrders(data);
+    } else {
+      setOrders([]);
+    }
+
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    setOrders([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  fetchOrders();
+}, []);
 
  
   useEffect(() => {
@@ -81,24 +94,25 @@ const Orderadmin: React.FC = () => {
   }
 
   const handleRemoveOrder = async (orderId: string | number) => {
-    try {
-      const response = await fetch(`http://localhost:5005/orders/${orderId}`, {
-        method: "DELETE",
-      });
+  try {
+    const { error } = await supabase
+      .from("orders")
+      .delete()
+      .eq("id", orderId); 
 
-      if (response.ok) {
-
-        setOrders(prev => prev.filter(order => String(order.id) !== String(orderId)));
-        setShowDropdown(null);
-        setDropdownPosition(null);
-      } else {
-        console.error("Failed to delete order");
-      }
-    } catch (error) {
-      console.error("Error deleting order:", error);
+    if (error) {
+      console.error("Supabase Error:", error.message);
+      return;
     }
-  }
 
+    setOrders(prev => prev.filter(order => String(order.id) !== String(orderId)));
+    setShowDropdown(null);
+    setDropdownPosition(null);
+    
+  } catch (error) {
+    console.error("Error deleting order:", error);
+  }
+};
   const toggleDropdown = (orderId: string, event: React.MouseEvent<HTMLButtonElement>) => {
     if (showDropdown === orderId) {
       setShowDropdown(null);
@@ -115,32 +129,25 @@ const Orderadmin: React.FC = () => {
 
   const handleStatusChange = async (orderId: string | number, newStatus: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'cancelled') => {
     try {
-      const response = await fetch(`http://localhost:5005/orders/${orderId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const { error } = await supabase
+        .from("orders")
+        .update({ status: newStatus }) 
+        .eq("id", orderId); 
 
-      if (response.ok) {
-        setOrders(prev => prev.map(order =>
-          String(order.id) === String(orderId) ? { ...order, status: newStatus } : order
-        ));
-
-        dispatch(updateOrderStatus({ orderId, status: newStatus }));
-
-
-        setStatusChangeMessage(`Order status successfully changed to ${newStatus.toUpperCase()}!`);
-
-
-        // setSelectedOrder(null); 
-        // const modalEl = document.getElementById('statusModal');
-        // if (modalEl) {
-        //   (window as any).bootstrap.Modal.getInstance(modalEl)?.hide();
-        // }
-      } else {
-        console.error("Failed to update order status");
+      if (error) {
+        console.error("Supabase Error:", error.message);
         setStatusChangeMessage("Failed to update order status. Please try again.");
+        return;
       }
+
+      setOrders(prev => prev.map(order =>
+        String(order.id) === String(orderId) ? { ...order, status: newStatus } : order
+      ));
+
+      dispatch(updateOrderStatus({ orderId, status: newStatus }));
+
+      setStatusChangeMessage(`Order status successfully changed to ${newStatus.toUpperCase()}!`);
+
     } catch (error) {
       console.error("Error updating order status:", error);
       setStatusChangeMessage("An error occurred while updating the order status.");

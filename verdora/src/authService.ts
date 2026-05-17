@@ -1,28 +1,57 @@
+import { createClient } from "@supabase/supabase-js";
 import type { LoginCredentials, RegisterData, User } from './Types/authTypes';
-import mockAuthData from '../db.json';
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<User> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock validation
-    if (credentials.email === 'user@example.com' && credentials.password === 'password') {
-      return mockAuthData.user;
-    } else {
-      throw new Error('Invalid credentials');
-    }
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", credentials.email)
+      .eq("password", credentials.password)
+      .single();
+
+    if (error || !data) throw new Error("Invalid credentials");
+    return data as User;
   },
 
   register: async (userData: RegisterData): Promise<{ success: boolean; message: string }> => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return mockAuthData.register;
+    const { data: existing } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", userData.email)
+      .single();
+
+    if (existing) throw new Error("Email already exists");
+
+    const { error } = await supabase
+      .from("users")
+      .insert([{ ...userData, role: "user", resetCode: null }]);
+
+    if (error) throw new Error(error.message);
+    return { success: true, message: "Registration successful" };
   },
 
   getCurrentUser: async (): Promise<User | null> => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    // Check if user is logged in (in real app, check token)
-    const token = localStorage.getItem('token');
-    return token ? mockAuthData.user : null;
-  }
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    // Extract user id from token: "mock-token-{id}-{timestamp}"
+    const parts = token.split("-");
+    const id = parts[2];
+    if (!id) return null;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) return null;
+    return data as User;
+  },
 };

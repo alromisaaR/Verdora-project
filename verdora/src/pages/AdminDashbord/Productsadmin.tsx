@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { FaRegEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { supabase } from "../../SupbaseClient/SupbaseClint";
+
 
 
 
@@ -208,23 +210,38 @@ export default function Productsadmin() {
     }
   }, [editingProduct, newProduct]);
 
-  async function getproducts() {
-    try {
-      setLoading(true);
-      const res = await axios.get<Products[]>("http://localhost:5005/products");
-      console.log("Products data:", res.data);
-      setProducts(res.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      toast.error("Error fetching products");
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  useEffect(() => {
-    getproducts();
-  }, []);
+ async function getproducts() {
+  try {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*");
+
+    if (error) throw error;
+
+    console.log("Products data from Supabase:", data);
+
+    if (data) {
+      const formattedProducts = data.map((p: any) => ({
+        ...p,
+        id: String(p.id)
+      }));
+      setProducts(formattedProducts);
+    }
+
+  } catch (error: any) {
+    console.error("Error fetching products:", error);
+    toast.error(error.message || "Error fetching products");
+  } finally {
+    setLoading(false);
+  }
+}
+
+useEffect(() => {
+  getproducts();
+}, []);
 
   // delete product
   const handleDelete = async (productId: number, productName: string) => {

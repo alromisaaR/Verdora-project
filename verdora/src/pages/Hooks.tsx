@@ -1,7 +1,12 @@
 import "../styles/global.css"
-import axios from "axios"
+import { createClient } from "@supabase/supabase-js"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 interface Product {
   id: string;
@@ -18,22 +23,27 @@ interface Product {
   [key: string]: unknown;
 }
 
-export type {Product};
+export type { Product };
 
 let cachedProducts: Product[] = [];
 
 export default function UseProducts() {
   const [products, setProducts] = useState<Product[]>(cachedProducts);
-  const [filter, setFilter] = useState<string>(""); 
+  const [filter, setFilter] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const navigate = useNavigate();
 
   async function getproducts() {
-    if (cachedProducts.length > 0) return; 
+    if (cachedProducts.length > 0) return;
     try {
-      const res = await axios.get<Product[]>("http://localhost:5005/products");
-      const fixedData = res.data.map(p => ({ ...p, id: String(p.id) }));
-      cachedProducts = fixedData; 
+      const { data, error } = await supabase
+        .from("products")
+        .select("*");
+
+      if (error) throw error;
+
+      const fixedData = (data as Product[]).map(p => ({ ...p, id: String(p.id) }));
+      cachedProducts = fixedData;
       setProducts(fixedData);
     } catch (error) {
       console.error(error);
@@ -49,7 +59,7 @@ export default function UseProducts() {
   }, []);
 
   let displayedProducts = products;
-  
+
   if (filter === "bestSelling") displayedProducts = products.filter(p => p.bestseller);
   if (filter === "newArrival") displayedProducts = products.filter(p => p.isNew);
   if (filter === "sale") displayedProducts = products.filter(p => p.oldprice);
@@ -64,5 +74,5 @@ export default function UseProducts() {
     );
   }
 
-  return {displayedProducts, filter, setFilter, searchTerm, setSearchTerm, goToDetails}
+  return { displayedProducts, filter, setFilter, searchTerm, setSearchTerm, goToDetails }
 }
