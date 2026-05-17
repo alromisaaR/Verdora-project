@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
 import authImg from "../../assets/download (6).jpeg";

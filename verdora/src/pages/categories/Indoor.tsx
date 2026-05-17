@@ -5,7 +5,7 @@ import type {Product} from "../Hooks"
 import CardLoader from "../../components/CardLoader/CardLoader";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import NotFound from "../../components/common/NotFound";
 
 

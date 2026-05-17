@@ -7,7 +7,7 @@ import CardLoader from "../../components/CardLoader/CardLoader";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import NotFound from "../../components/common/NotFound";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 export default function Bonsai_miniature() {
   const {

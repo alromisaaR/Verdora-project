@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import "../../styles/global.css";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 import { createClient } from "@supabase/supabase-js";
  
