@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaTwitter, FaLeaf } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Logo from '../../assets/logo.png';
-import "./Footer.css";
+import "./footer.css";
 
 const Footer: React.FC = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
