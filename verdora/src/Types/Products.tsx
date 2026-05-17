@@ -30,3 +30,5 @@ export interface Products {
   height: string;
   containerType: string;
 }
+
+export type Product = Products;

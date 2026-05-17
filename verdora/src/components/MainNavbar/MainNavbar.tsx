@@ -27,9 +27,8 @@ interface MainNavbarProps {
 
 type ActiveLinkType = "home" | "products" | "categories";
 
-const MainNavbar: React.FC<MainNavbarProps> = ({ onLogout, userName }) => {
+const MainNavbar: React.FC<MainNavbarProps> = ({ onLogout}) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<ActiveLinkType>("home");
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);

@@ -53,7 +53,7 @@ const AppContent: React.FC = () => {
   const [userName, setUserName] = useState<string>(
     localStorage.getItem("userName") || ""
   );
-  const [cartCount, setCartCount] = useState<number>(0);
+  // const [cartCount, setCartCount] = useState<number>(0);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -98,7 +98,7 @@ const AppContent: React.FC = () => {
           (isAuthenticated ? (
             <MainNavbar
               onLogout={handleLogout}
-              cartCount={cartCount}
+              // cartCount={cartCount}
               userName={userName}
             />
           ) : (
