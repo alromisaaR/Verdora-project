@@ -1,5 +1,5 @@
 import React from "react";
-import { Helmet } from "react-helmet";
+import { Helmet} from 'react-helmet-async';
 import MainSlider from "../components/Home/MainSlider/MainSlider";
 import CategorySlider from "../components/Home/CategorySection/CategorySection";
 import LowestProducts from "../components/Home/LowestProducts/LowestProducts";
