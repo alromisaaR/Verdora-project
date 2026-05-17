@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import "../../styles/global.css";
-import type { Products } from "../../Types";
+import type { Products } from "../../Types/Products";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { RiDeleteBinLine } from "react-icons/ri";

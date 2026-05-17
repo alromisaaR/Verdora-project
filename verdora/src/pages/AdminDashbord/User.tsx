@@ -488,8 +488,8 @@ const UsersTable: React.FC = () => {
                       onClick={formType === "edit" ? saveEdit : submitNewUser}
                       disabled={
                         formType === "edit"
-                          ? updateMutation.isLoading
-                          : createMutation.isLoading
+                          ? updateMutation.isPending
+                          : createMutation.isPending
                       }
                       style={{
                         backgroundColor: DARK_GREEN,
@@ -502,10 +502,10 @@ const UsersTable: React.FC = () => {
                       }}
                     >
                       {formType === "edit"
-                        ? updateMutation.isLoading
+                        ? updateMutation.isPending
                           ? "Saving..."
                           : "Save Changes"
-                        : createMutation.isLoading
+                        : createMutation.isPending
                           ? "Adding..."
                           : "Add Customer"}
                     </button>
@@ -565,7 +565,7 @@ const UsersTable: React.FC = () => {
                 <button
                   className="btn btn-danger order-1 order-sm-2"
                   onClick={confirmDelete}
-                  disabled={deleteMutation.isLoading}
+                  disabled={deleteMutation.isPending}
                   style={{
                     borderRadius: 12,
                     padding: "12px 24px",
@@ -573,7 +573,7 @@ const UsersTable: React.FC = () => {
                     minWidth: "120px",
                   }}
                 >
-                  {deleteMutation.isLoading ? "Deleting..." : "Delete"}
+                  {deleteMutation.isPending? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>

@@ -1,5 +1,5 @@
 export interface Products {
-  id: string; // غير لـ string
+  id: string;
   name: string;
   description: string;
   price: string;

@@ -15,6 +15,7 @@ interface User {
   image: string;
   email: string;
   password: string;
+  role: string;
 }
 
 const UserProfile: React.FC = () => {
