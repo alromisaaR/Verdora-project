@@ -206,7 +206,7 @@ export default function Productsadmin() {
       nativeRegion: editingProduct.nativeRegion,
       lifeCycle: editingProduct.lifeCycle,
       genus: editingProduct.genus,
-      type: editingProduct.type,
+      type: editingProduct.type ||"",
       climate: editingProduct.climate,
       soilType: editingProduct.soilType,
       wateringNeeds: editingProduct.wateringNeeds,
@@ -495,7 +495,7 @@ export default function Productsadmin() {
                 numericIds.length > 0 ? Math.max(...numericIds) : 0;
 
               setNewProduct({
-                id: lastId + 1,
+                id: String(lastId + 1),
                 name: "",
                 image: "",
                 category: "Indoor",
