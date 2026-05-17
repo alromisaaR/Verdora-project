@@ -241,11 +241,11 @@ export default function Productsadmin() {
       review: newProduct.review,
       discount: newProduct.discount,
       isNew: newProduct.isNew,
-      scientificName: newProduct.scientificName,
-      nativeRegion: newProduct.nativeRegion,
+      scientificName: newProduct.scientificName || "",
+      nativeRegion: newProduct.nativeRegion || "",
       lifeCycle: newProduct.lifeCycle,
       genus: newProduct.genus,
-      type: newProduct.type,
+      type: newProduct.type || "",
       climate: newProduct.climate,
       soilType: newProduct.soilType,
       wateringNeeds: newProduct.wateringNeeds,
@@ -746,7 +746,7 @@ export default function Productsadmin() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8" className="text-center py-4 text-gray-500">
+                  <td colSpan={8} className="text-center py-4 text-gray-500">
                     {loading
                       ? "Loading products..."
                       : "No products found matching your criteria."}
