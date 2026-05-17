@@ -147,7 +147,7 @@ export default function Productsadmin() {
   // Formik form initialization
   const formik = useFormik({
     initialValues: {
-      id: 0,
+      id: "",
       name: "",
       image: "",
       category: "Indoor",
@@ -185,27 +185,82 @@ export default function Productsadmin() {
   });
 
   // Update form values when editingProduct or newProduct changes
-  useEffect(() => {
-    if (editingProduct) {
-      const priceValue = parseFloat(editingProduct.price.replace(" EGP", ""));
-      formik.setValues({
-  ...editingProduct,
-  price: String (priceValue),  
-});
-    } else if (newProduct) {
-      const numericIds = products
-        .map((p) => Number(p.id))
-        .filter((id) => !isNaN(id));
-      const lastId = numericIds.length > 0 ? Math.max(...numericIds) : 0;
-
-      const priceValue = parseFloat(newProduct.price.replace(" EGP", ""));
-      formik.setValues({
-        ...newProduct,
-        id: String(lastId + 1), 
-        price: String(priceValue),
-      });
-    }
-  }, [editingProduct, newProduct]);
+ useEffect(() => {
+  if (editingProduct) {
+    const priceValue = parseFloat(editingProduct.price.replace(" EGP", ""));
+    formik.setValues({
+      id: editingProduct.id,
+      name: editingProduct.name,
+      image: editingProduct.image,
+      category: editingProduct.category,
+      price: String(priceValue),
+      stock: editingProduct.stock,
+      bestseller: editingProduct.bestseller,
+      oldprice: editingProduct.oldprice,
+      rate: editingProduct.rate,
+      description: editingProduct.description,
+      review: editingProduct.review,
+      discount: editingProduct.discount,
+      isNew: editingProduct.isNew,
+      scientificName: editingProduct.scientificName,
+      nativeRegion: editingProduct.nativeRegion,
+      lifeCycle: editingProduct.lifeCycle,
+      genus: editingProduct.genus,
+      type: editingProduct.type,
+      climate: editingProduct.climate,
+      soilType: editingProduct.soilType,
+      wateringNeeds: editingProduct.wateringNeeds,
+      sunlight: editingProduct.sunlight,
+      humidity: editingProduct.humidity,
+      growthRate: editingProduct.growthRate,
+      propagation: editingProduct.propagation,
+      toxicity: editingProduct.toxicity,
+      careTips: editingProduct.careTips,
+      floweringSeason: editingProduct.floweringSeason,
+      height: editingProduct.height,
+      containerType: editingProduct.containerType,
+    });
+  } else if (newProduct) {
+    const numericIds = products
+      .map((p) => Number(p.id))
+      .filter((id) => !isNaN(id));
+    const lastId = numericIds.length > 0 ? Math.max(...numericIds) : 0;
+    const priceValue = parseFloat(newProduct.price.replace(" EGP", ""));
+    
+    formik.setValues({
+      id: String(lastId + 1),
+      name: newProduct.name,
+      image: newProduct.image,
+      category: newProduct.category,
+      price: String(priceValue),
+      stock: newProduct.stock,
+      bestseller: newProduct.bestseller,
+      oldprice: newProduct.oldprice,
+      rate: newProduct.rate,
+      description: newProduct.description,
+      review: newProduct.review,
+      discount: newProduct.discount,
+      isNew: newProduct.isNew,
+      scientificName: newProduct.scientificName,
+      nativeRegion: newProduct.nativeRegion,
+      lifeCycle: newProduct.lifeCycle,
+      genus: newProduct.genus,
+      type: newProduct.type,
+      climate: newProduct.climate,
+      soilType: newProduct.soilType,
+      wateringNeeds: newProduct.wateringNeeds,
+      sunlight: newProduct.sunlight,
+      humidity: newProduct.humidity,
+      growthRate: newProduct.growthRate,
+      propagation: newProduct.propagation,
+      toxicity: newProduct.toxicity,
+      careTips: newProduct.careTips,
+      floweringSeason: newProduct.floweringSeason,
+      height: newProduct.height,
+      containerType: newProduct.containerType,
+    });
+  }
+}, [editingProduct, newProduct]);
 
   async function getproducts() {
     try {

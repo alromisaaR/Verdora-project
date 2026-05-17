@@ -373,13 +373,7 @@ const PlantQuiz: React.FC = () => {
 
   const closeOverlay = () => setOverlayOpen(false);
 
-  const restartQuiz = () => {
-    setCurrentQuestion(0);
-    setAnswers({ experience: "", light: "", space: "", style: "" });
-    setResults([]);
-    setQuizCompleted(false);
-    setOverlayOpen(true);
-  };
+ 
 
   const totalPages = Math.ceil(results.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
