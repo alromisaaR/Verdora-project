@@ -14,14 +14,11 @@ const initialState: ProductsState = {
   error: null,
 };
 
-
 export const fetchProducts = createAsyncThunk<Product[]>(
   "products/fetchProducts",
   async (_, { rejectWithValue }) => {
     try {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*");
+      const { data, error } = await supabase.from("products").select("*");
 
       if (error) throw error;
 
@@ -29,7 +26,7 @@ export const fetchProducts = createAsyncThunk<Product[]>(
 
       const productsWithStringIds = (data || []).map((product: any) => ({
         ...product,
-        id: String(product.id) 
+        id: String(product.id),
       }));
 
       return productsWithStringIds;
@@ -37,9 +34,8 @@ export const fetchProducts = createAsyncThunk<Product[]>(
       console.error("Error fetching products from Supabase:", error);
       return rejectWithValue(error.message || "Failed to load products");
     }
-  }
+  },
 );
-
 
 const productsSlice = createSlice({
   name: "products",
@@ -58,7 +54,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || "Failed to load products";
+        state.error = (action.payload as string) || "Failed to load products";
         console.error("Products loading failed:", action.payload);
       });
   },

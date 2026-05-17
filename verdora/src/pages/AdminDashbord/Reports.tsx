@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { FileText, TrendingUp, Tag, CalendarDays, Download } from "lucide-react";
+import {
+  FileText,
+  TrendingUp,
+  Tag,
+  CalendarDays,
+  Download,
+} from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import "./Reports.css";
-import "../../styles/global.css"
+import "../../styles/global.css";
+import { supabase } from "../../SupbaseClient/SupbaseClint";
 
-interface OrderItem {
-  name: string;
-  category: string;
-  price: string;
-  quantity: number;
-}
-
-interface Order {
-  id: string;
-  items: OrderItem[];
-  orderDate: string;
-}
+// interface OrderItem {
+//   name: string;
+//   category: string;
+//   price: string;
+//   quantity: number;
+// }
 
 interface ProductSummary {
   name: string;
@@ -46,89 +46,100 @@ const Reports: React.FC = () => {
   const [monthlyRevenue, setMonthlyRevenue] = useState<MonthlyRevenue[]>([]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchOrdersFromSupabase = async () => {
       try {
-        const ordersRes = await axios.get("http://localhost:5005/orders");
-        const ordersData: Order[] = ordersRes.data;
+        const { data: ordersData, error } = await supabase
+          .from("orders")
+          .select("*");
 
-        const productMap: Record<string, ProductSummary> = {};
-        const categoryMap: Record<string, CategorySummary> = {};
-        const monthMap: Record<string, number> = {};
+        if (error) throw error;
 
-        ordersData.forEach((order) => {
-          order.items.forEach((item) => {
-            const priceNum = parseFloat(item.price.replace(" EGP", "")) || 0;
-            const revenue = priceNum * item.quantity;
+        if (ordersData) {
+          const productMap: Record<string, ProductSummary> = {};
+          const categoryMap: Record<string, CategorySummary> = {};
+          const monthMap: Record<string, number> = {};
 
-            // Product summary
-            if (!productMap[item.name]) {
-              productMap[item.name] = {
-                name: item.name,
-                category: item.category,
-                quantitySold: item.quantity,
-                totalRevenue: revenue,
-                percentage: "0",
-              };
-            } else {
-              productMap[item.name].quantitySold += item.quantity;
-              productMap[item.name].totalRevenue += revenue;
-            }
+          ordersData.forEach((order: any) => {
+            const items = Array.isArray(order.items)
+              ? order.items
+              : JSON.parse(order.items || "[]");
 
-            // Category summary
-            if (!categoryMap[item.category]) {
-              categoryMap[item.category] = {
-                category: item.category,
-                totalRevenue: revenue,
-                quantitySold: item.quantity,
-              };
-            } else {
-              categoryMap[item.category].totalRevenue += revenue;
-              categoryMap[item.category].quantitySold += item.quantity;
+            items.forEach((item: any) => {
+              const rawPrice = String(item.price).replace(" EGP", "");
+              const priceNum = parseFloat(rawPrice) || 0;
+              const revenue = priceNum * (item.quantity || 1);
+
+              // Product summary logic ...
+              if (!productMap[item.name]) {
+                productMap[item.name] = {
+                  name: item.name,
+                  category: item.category || "Uncategorized",
+                  quantitySold: item.quantity,
+                  totalRevenue: revenue,
+                  percentage: "0",
+                };
+              } else {
+                productMap[item.name].quantitySold += item.quantity;
+                productMap[item.name].totalRevenue += revenue;
+              }
+
+              // Category summary logic ...
+              const catName = item.category || "Uncategorized";
+              if (!categoryMap[catName]) {
+                categoryMap[catName] = {
+                  category: catName,
+                  totalRevenue: revenue,
+                  quantitySold: item.quantity,
+                };
+              } else {
+                categoryMap[catName].totalRevenue += revenue;
+                categoryMap[catName].quantitySold += item.quantity;
+              }
+            });
+
+            // Monthly revenue
+            const dateValue = order.orderDate || order.created_at;
+            if (dateValue) {
+              const monthName = new Date(dateValue).toLocaleString("en-US", {
+                month: "short",
+                year: "numeric",
+              });
+              monthMap[monthName] =
+                (monthMap[monthName] || 0) +
+                items.reduce((sum: number, i: any) => {
+                  const p =
+                    parseFloat(String(i.price).replace(" EGP", "")) || 0;
+                  return sum + p * i.quantity;
+                }, 0);
             }
           });
 
-          // Monthly revenue
-          if (order.orderDate) {
-            const monthName = new Date(order.orderDate).toLocaleString("en-US", {
-              month: "short",
-              year: "numeric",
-            });
-            monthMap[monthName] =
-              (monthMap[monthName] || 0) +
-              order.items.reduce(
-                (sum, i) =>
-                  sum + parseFloat(i.price.replace(" EGP", "")) * i.quantity,
-                0
-              );
-          }
-        });
+          const productArray = Object.values(productMap);
+          const totalRev = productArray.reduce((s, p) => s + p.totalRevenue, 0);
 
-        // Final summaries
-        const productArray = Object.values(productMap);
-        const totalRevenue = productArray.reduce(
-          (s, p) => s + p.totalRevenue,
-          0
-        );
+          const finalProducts = productArray.map((p) => ({
+            ...p,
+            percentage:
+              totalRev > 0
+                ? ((p.totalRevenue / totalRev) * 100).toFixed(1)
+                : "0",
+          }));
 
-        const finalProducts = productArray.map((p) => ({
-          ...p,
-          percentage: ((p.totalRevenue / totalRevenue) * 100).toFixed(1),
-        }));
-
-        setSummary(finalProducts);
-        setCategories(Object.values(categoryMap));
-        setMonthlyRevenue(
-          Object.entries(monthMap).map(([month, total]) => ({
-            month,
-            total,
-          }))
-        );
+          setSummary(finalProducts);
+          setCategories(Object.values(categoryMap));
+          setMonthlyRevenue(
+            Object.entries(monthMap).map(([month, total]) => ({
+              month,
+              total,
+            })),
+          );
+        }
       } catch (error) {
         console.error("Error fetching reports:", error);
       }
     };
 
-    fetchOrders();
+    fetchOrdersFromSupabase();
   }, []);
 
   // Export Functions

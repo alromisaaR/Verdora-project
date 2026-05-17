@@ -5,7 +5,11 @@ import type { RootState } from "../redux/store";
 import { addToCart } from "../redux/slices/cartSlice";
 import "../styles/global.css";
 import { IoCartOutline } from "react-icons/io5";
-import { loadWishlist, removeFromWishlistById, clearWishlist } from "../utils/wishlistStorage";
+import {
+  loadWishlist,
+  removeFromWishlistById,
+  clearWishlist,
+} from "../utils/wishlistStorage";
 
 type Product = {
   id: number | string;
@@ -76,7 +80,10 @@ const Wishlish: React.FC = () => {
 
   if (!items.length) {
     return (
-      <div className="wishlist-page container py-5 checkout-page" style={{ minHeight: "70vh" }}>
+      <div
+        className="wishlist-page container py-5 checkout-page"
+        style={{ minHeight: "70vh" }}
+      >
         <div
           style={{
             maxWidth: "600px",
@@ -111,8 +118,8 @@ const Wishlish: React.FC = () => {
               marginBottom: "32px",
             }}
           >
-            Start adding your favorite plants to your wishlist and watch your garden
-            dreams grow!
+            Start adding your favorite plants to your wishlist and watch your
+            garden dreams grow!
           </p>
           <Link
             to="/products"
@@ -132,7 +139,10 @@ const Wishlish: React.FC = () => {
   }
 
   return (
-    <div className="wishlist-page container py-5 checkout-page" style={{ maxWidth: "1400px" }}>
+    <div
+      className="wishlist-page container py-5 checkout-page"
+      style={{ maxWidth: "1400px" }}
+    >
       <div style={{ marginBottom: "48px" }}>
         <h1
           style={{
@@ -152,8 +162,8 @@ const Wishlish: React.FC = () => {
             fontSize: "16px",
           }}
         >
-          {items.length} {items.length === 1 ? "plant" : "plants"} waiting to join your
-          collection
+          {items.length} {items.length === 1 ? "plant" : "plants"} waiting to
+          join your collection
         </p>
       </div>
 
@@ -171,7 +181,8 @@ const Wishlish: React.FC = () => {
                   hoveredCard === p.id
                     ? "0 8px 24px rgba(0,0,0,0.12)"
                     : "0 2px 8px rgba(0,0,0,0.08)",
-                transform: hoveredCard === p.id ? "translateY(-8px)" : "translateY(0)",
+                transform:
+                  hoveredCard === p.id ? "translateY(-8px)" : "translateY(0)",
               }}
               onMouseEnter={() => setHoveredCard(p.id)}
               onMouseLeave={() => setHoveredCard(null)}
@@ -199,7 +210,10 @@ const Wishlish: React.FC = () => {
                   />
                 </div>
               )}
-              <div className="card-body d-flex flex-column ms-2" style={{ padding: "5px" }}>
+              <div
+                className="card-body d-flex flex-column ms-2"
+                style={{ padding: "5px" }}
+              >
                 <h5
                   style={{
                     fontSize: "14px",
@@ -238,7 +252,8 @@ const Wishlish: React.FC = () => {
                       fontSize: "13px",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--color-green-darker)";
+                      e.currentTarget.style.backgroundColor =
+                        "var(--color-green-darker)";
                       e.currentTarget.style.color = "#fff";
                       e.currentTarget.style.transform = "scale(1.05)";
                     }}
@@ -307,7 +322,10 @@ const Wishlish: React.FC = () => {
             fontSize: "18px",
             fontWeight: "700",
             transition: "all 0.3s ease",
-            transform: hoveredButton === "moveAll" ? "translateY(-2px)" : "translateY(0)",
+            transform:
+              hoveredButton === "moveAll"
+                ? "translateY(-2px)"
+                : "translateY(0)",
             boxShadow:
               hoveredButton === "moveAll"
                 ? "0 6px 20px rgba(76, 175, 80, 0.3)"
@@ -318,8 +336,11 @@ const Wishlish: React.FC = () => {
           onClick={moveAllToCart}
           aria-label="Move all wishlist items to cart"
         >
-            <IoCartOutline size={22} style={{ marginRight: "8px", marginTop: "-1px" }}/> 
-            Move All to Cart ({items.length})
+          <IoCartOutline
+            size={22}
+            style={{ marginRight: "8px", marginTop: "-1px" }}
+          />
+          Move All to Cart ({items.length})
         </button>
       </div>
     </div>

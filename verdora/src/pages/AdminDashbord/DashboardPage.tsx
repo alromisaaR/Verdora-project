@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/global.css"
-import { TrendingUp, Users, Package, BarChart3, DollarSign, Leaf } from "lucide-react";
+import "../../styles/global.css";
+import {
+  TrendingUp,
+  Users,
+  Package,
+  BarChart3,
+  DollarSign,
+  Leaf,
+} from "lucide-react";
 import {
   LineChart,
   Line,
@@ -20,7 +27,6 @@ import {
 import "./DashboardPage.css";
 import { supabase } from "../../SupbaseClient/SupbaseClint";
 
-
 const DashboardPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -28,33 +34,36 @@ const DashboardPage: React.FC = () => {
 
   // Fetch Data
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const [usersResult, ordersResult, productsResult] = await Promise.all([
-        supabase.from("users").select("*"),
-        supabase.from("orders").select("*"),
-        supabase.from("products").select("*"),
-      ]);
+    const fetchData = async () => {
+      try {
+        const [usersResult, ordersResult, productsResult] = await Promise.all([
+          supabase.from("users").select("*"),
+          supabase.from("orders").select("*"),
+          supabase.from("products").select("*"),
+        ]);
 
-      if (usersResult.error) throw usersResult.error;
-      if (ordersResult.error) throw ordersResult.error;
-      if (productsResult.error) throw productsResult.error;
+        if (usersResult.error) throw usersResult.error;
+        if (ordersResult.error) throw ordersResult.error;
+        if (productsResult.error) throw productsResult.error;
 
-      setUsers(usersResult.data || []);
-      setOrders(ordersResult.data || []);
-      setProducts(productsResult.data || []);
+        setUsers(usersResult.data || []);
+        setOrders(ordersResult.data || []);
+        setProducts(productsResult.data || []);
 
-      console.log("Dashboard data loaded successfully!");
-    } catch (error) {
-      console.error("Error fetching dashboard data from Supabase:", error);
-    }
-  };
+        console.log("Dashboard data loaded successfully!");
+      } catch (error) {
+        console.error("Error fetching dashboard data from Supabase:", error);
+      }
+    };
 
-  fetchData();
-}, []);
+    fetchData();
+  }, []);
 
   // KPI Calculations
-  const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+  const totalRevenue = orders.reduce(
+    (sum, order) => sum + (order.total || 0),
+    0,
+  );
   const totalOrders = orders.length;
   const totalUsers = users.length;
   const totalProducts = products.length;
@@ -72,8 +81,15 @@ const DashboardPage: React.FC = () => {
   ];
 
   const ordersSummaryData = [
-    { name: "Cash", value: orders.filter((o) => o.paymentMethod === "cash-on-delivery").length },
-    { name: "Online", value: orders.filter((o) => o.paymentMethod === "online").length },
+    {
+      name: "Cash",
+      value: orders.filter((o) => o.paymentMethod === "cash-on-delivery")
+        .length,
+    },
+    {
+      name: "Online",
+      value: orders.filter((o) => o.paymentMethod === "online").length,
+    },
   ];
 
   const revenueData = salesOverviewData;
@@ -138,7 +154,13 @@ const DashboardPage: React.FC = () => {
               <YAxis />
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip />
-              <Area type="monotone" dataKey="total" stroke="#6DA34D" fillOpacity={1} fill="url(#colorSales)" />
+              <Area
+                type="monotone"
+                dataKey="total"
+                stroke="#6DA34D"
+                fillOpacity={1}
+                fill="url(#colorSales)"
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -155,7 +177,12 @@ const DashboardPage: React.FC = () => {
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="users" stroke="#52734D" strokeWidth={2} />
+              <Line
+                type="monotone"
+                dataKey="users"
+                stroke="#52734D"
+                strokeWidth={2}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>

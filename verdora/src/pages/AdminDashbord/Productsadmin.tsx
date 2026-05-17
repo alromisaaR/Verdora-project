@@ -10,9 +10,6 @@ import { FaRegEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { supabase } from "../../SupbaseClient/SupbaseClint";
 
-
-
-
 export default function Productsadmin() {
   const [products, setProducts] = useState<Products[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -62,14 +59,14 @@ export default function Productsadmin() {
           } catch {
             return false;
           }
-        }
+        },
       ),
 
     category: Yup.string()
       .required("Category is required")
       .oneOf(
         ["Indoor", "Outdoor", "bonsai_miniature", "Flowering"],
-        "Please select a valid category"
+        "Please select a valid category",
       ),
 
     price: Yup.number()
@@ -85,12 +82,12 @@ export default function Productsadmin() {
 
     scientificName: Yup.string().max(
       100,
-      "Scientific name cannot exceed 100 characters"
+      "Scientific name cannot exceed 100 characters",
     ),
 
     wateringNeeds: Yup.string().max(
       50,
-      "Watering needs cannot exceed 50 characters"
+      "Watering needs cannot exceed 50 characters",
     ),
 
     sunlight: Yup.string().max(50, "Sunlight cannot exceed 50 characters"),
@@ -103,7 +100,7 @@ export default function Productsadmin() {
 
     propagation: Yup.string().max(
       50,
-      "Propagation cannot exceed 50 characters"
+      "Propagation cannot exceed 50 characters",
     ),
 
     toxicity: Yup.string().max(50, "Toxicity cannot exceed 50 characters"),
@@ -112,19 +109,19 @@ export default function Productsadmin() {
 
     floweringSeason: Yup.string().max(
       50,
-      "Flowering season cannot exceed 50 characters"
+      "Flowering season cannot exceed 50 characters",
     ),
 
     height: Yup.string().max(50, "Height cannot exceed 50 characters"),
 
     containerType: Yup.string().max(
       50,
-      "Container type cannot exceed 50 characters"
+      "Container type cannot exceed 50 characters",
     ),
 
     nativeRegion: Yup.string().max(
       100,
-      "Native region cannot exceed 100 characters"
+      "Native region cannot exceed 100 characters",
     ),
 
     lifeCycle: Yup.string().max(50, "Life cycle cannot exceed 50 characters"),
@@ -210,83 +207,76 @@ export default function Productsadmin() {
     }
   }, [editingProduct, newProduct]);
 
+  async function getproducts() {
+    try {
+      setLoading(true);
 
- async function getproducts() {
-  try {
-    setLoading(true);
+      const { data, error } = await supabase.from("products").select("*");
 
-    const { data, error } = await supabase
-      .from("products")
-      .select("*");
+      if (error) throw error;
 
-    if (error) throw error;
+      console.log("Products data from Supabase:", data);
 
-    console.log("Products data from Supabase:", data);
-
-    if (data) {
-      const formattedProducts = data.map((p: any) => ({
-        ...p,
-        id: String(p.id)
-      }));
-      setProducts(formattedProducts);
+      if (data) {
+        const formattedProducts = data.map((p: any) => ({
+          ...p,
+          id: String(p.id),
+        }));
+        setProducts(formattedProducts);
+      }
+    } catch (error: any) {
+      console.error("Error fetching products:", error);
+      toast.error(error.message || "Error fetching products");
+    } finally {
+      setLoading(false);
     }
-
-  } catch (error: any) {
-    console.error("Error fetching products:", error);
-    toast.error(error.message || "Error fetching products");
-  } finally {
-    setLoading(false);
   }
-}
 
-useEffect(() => {
-  getproducts();
-}, []);
+  useEffect(() => {
+    getproducts();
+  }, []);
 
   // delete product
   const handleDelete = async (productId: number, productName: string) => {
-  const result = await Swal.fire({
-    title: `Delete "${productName}"?`,
-    text: "This action cannot be undone.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#aaa",
-    confirmButtonText: "Yes, delete it!",
-    cancelButtonText: "Cancel",
-    background: "#fff",
-    color: "#333",
-  });
-
-  if (!result.isConfirmed) return;
-
-  try {
-    await axios.delete(`http://localhost:5005/products/${productId}`);
-
-   
-    setProducts((prevProducts) =>
-      prevProducts.filter((p) => p.id !== productId)
-    );
-
-  
-    await Swal.fire({
-      title: "Deleted!",
-      text: `"${productName}" has been removed successfully.`,
-      icon: "success",
-      confirmButtonColor: "#3085d6",
-      timer: 1800,
-      showConfirmButton: false,
-    });
-  } catch (error) {
-    
-    Swal.fire({
-      title: "Error!",
-      text: `Error in deleting "${productName}".`,
-      icon: "error",
+    const result = await Swal.fire({
+      title: `Delete "${productName}"?`,
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
       confirmButtonColor: "#d33",
+      cancelButtonColor: "#aaa",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      background: "#fff",
+      color: "#333",
     });
-  }
-};
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.delete(`http://localhost:5005/products/${productId}`);
+
+      setProducts((prevProducts) =>
+        prevProducts.filter((p) => p.id !== productId),
+      );
+
+      await Swal.fire({
+        title: "Deleted!",
+        text: `"${productName}" has been removed successfully.`,
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+        timer: 1800,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: `Error in deleting "${productName}".`,
+        icon: "error",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
 
   const handleSave = async (values: any) => {
     try {
@@ -301,18 +291,18 @@ useEffect(() => {
       if (editingProduct) {
         const res = await axios.put(
           `http://localhost:5005/products/${editingProduct.id}`,
-          productToSave
+          productToSave,
         );
 
         setProducts((prev) =>
-          prev.map((p) => (p.id === editingProduct.id ? res.data : p))
+          prev.map((p) => (p.id === editingProduct.id ? res.data : p)),
         );
         setEditingProduct(null);
         toast.success(`${editingProduct.name} updated successfully!`);
       } else if (newProduct) {
         const res = await axios.post(
           "http://localhost:5005/products",
-          productToSave
+          productToSave,
         );
 
         setProducts((prev) => [...prev, res.data]);
@@ -332,7 +322,7 @@ useEffect(() => {
 
       if (error.response?.status === 400) {
         toast.error(
-          `Validation error: ${error.response.data?.message || "Invalid data"}`
+          `Validation error: ${error.response.data?.message || "Invalid data"}`,
         );
       } else if (error.response?.status === 409) {
         toast.error(`Product with this name already exists`);
@@ -353,14 +343,14 @@ useEffect(() => {
         statusFilter === "All" ||
         (statusFilter === "Active" && p.stock >= 10) ||
         (statusFilter === "Lowstock" && p.stock > 0 && p.stock < 10) ||
-        (statusFilter === "Outofstock" && p.stock === 0)
+        (statusFilter === "Outofstock" && p.stock === 0),
     )
     .filter(
       (p) =>
         sanitizedSearch === "" ||
         p.name.toLowerCase().includes(sanitizedSearch.toLowerCase()) ||
         (p.description &&
-          p.description.toLowerCase().includes(sanitizedSearch.toLowerCase()))
+          p.description.toLowerCase().includes(sanitizedSearch.toLowerCase())),
     );
 
   // pagination
@@ -368,7 +358,7 @@ useEffect(() => {
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filterProducts.slice(
     indexOfFirstProduct,
-    indexOfLastProduct
+    indexOfLastProduct,
   );
 
   const totalPages = Math.ceil(filterProducts.length / productsPerPage);
@@ -672,11 +662,12 @@ useEffect(() => {
                       )}
                     </td>
                     <td>
-                      <FaRegEdit size={20}
+                      <FaRegEdit
+                        size={20}
                         style={{
                           color: "var(--color-green-darkest)",
                           width: "55px",
-                          cursor: "pointer"
+                          cursor: "pointer",
                         }}
                         onClick={() => {
                           console.log("Editing product:", p);
@@ -684,9 +675,10 @@ useEffect(() => {
                           setNewProduct(null);
                         }}
                       />
-                      
-                      <RiDeleteBinLine size={25}
-                      style={{ cursor: "pointer"}}
+
+                      <RiDeleteBinLine
+                        size={25}
+                        style={{ cursor: "pointer" }}
                         className="text-danger"
                         onClick={() => {
                           {
@@ -694,7 +686,6 @@ useEffect(() => {
                           }
                         }}
                       />
-                        
                     </td>
                   </tr>
                 ))
@@ -927,7 +918,7 @@ useEffect(() => {
                           if (!file.type.startsWith("image/")) {
                             formik.setFieldError(
                               "image",
-                              "Please select a valid image file (JPEG, PNG, GIF, etc.)"
+                              "Please select a valid image file (JPEG, PNG, GIF, etc.)",
                             );
                             return;
                           }
@@ -935,7 +926,7 @@ useEffect(() => {
                           if (file.size > 5 * 1024 * 1024) {
                             formik.setFieldError(
                               "image",
-                              "Image size should be less than 5MB"
+                              "Image size should be less than 5MB",
                             );
                             return;
                           }
@@ -950,7 +941,7 @@ useEffect(() => {
                           reader.onerror = () => {
                             formik.setFieldError(
                               "image",
-                              "Failed to upload image"
+                              "Failed to upload image",
                             );
                           };
                           reader.readAsDataURL(file);
@@ -1019,7 +1010,7 @@ useEffect(() => {
                                 "https://via.placeholder.com/200x200?text=Invalid+Image";
                               formik.setFieldError(
                                 "image",
-                                "Failed to load image. Please check the URL or upload a new image."
+                                "Failed to load image. Please check the URL or upload a new image.",
                               );
                             }}
                           />
@@ -1788,8 +1779,8 @@ useEffect(() => {
                     {formik.isSubmitting
                       ? "Saving..."
                       : editingProduct
-                      ? "Update Product"
-                      : "Add Product"}
+                        ? "Update Product"
+                        : "Add Product"}
                   </button>
                 </div>
               </form>

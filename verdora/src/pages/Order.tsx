@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../styles/order.css";
+import { supabase } from "../SupbaseClient/SupbaseClint";
 
 const OrdersPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,36 +12,64 @@ const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 4; 
+  const ordersPerPage = 4;
 
   useEffect(() => {
     const fetchUserOrders = async () => {
+      if (!currentUserEmail) {
+        setOrders([]);
+        return;
+      }
+
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:5005/orders");
-        if (!res.ok) throw new Error("Failed to fetch orders");
-        const data = await res.json();
-        const filtered = Array.isArray(data)
-          ? data.filter(
-              (o: any) =>
-                (o?.shippingInfo?.email || "").toLowerCase().trim() ===
-                currentUserEmail
-            )
-          : [];
-        setOrders(filtered);
-      } catch {
+
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("email", currentUserEmail.toLowerCase().trim());
+
+        if (error) throw error;
+
+        if (data && Array.isArray(data)) {
+          const formattedOrders = data.map((order: any) => ({
+            id: order.id,
+            items: order.items,
+            paymentMethod: order.payment_method,
+            total: order.total,
+            createdAt: order.created_at,
+            orderDate: order.order_date,
+            status: order.status,
+            shippingInfo: {
+              firstName: order.first_name,
+              lastName: order.last_name,
+              email: order.email,
+              phone: order.phone,
+              address: order.address,
+              city: order.city,
+              zipCode: order.zip_code,
+            },
+          }));
+
+          setOrders(formattedOrders);
+        } else {
+          setOrders([]);
+        }
+      } catch (err) {
+        console.error("Error fetching orders from Supabase:", err);
         setOrders([]);
       } finally {
         setLoading(false);
       }
     };
+
     fetchUserOrders();
   }, [currentUserEmail]);
 
   const handleDeleteOrder = async (orderId: string) => {
     const confirm = await Swal.fire({
       title: `<span style="font-family: var(--font-family-serif)">Are you sure?</span>`,
-      html:`<span style="font-family: var(--font-family-serif)">This will permanently delete your order.</span>`,
+      html: `<span style="font-family: var(--font-family-serif)">This will permanently delete your order.</span>`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#000",
@@ -52,8 +81,7 @@ const OrdersPage: React.FC = () => {
 
     try {
       const orderRes = await fetch(`http://localhost:5005/orders/${orderId}`);
-      if (!orderRes.ok)
-        return Swal.fire("Error", "Order not found!", "error");
+      if (!orderRes.ok) return Swal.fire("Error", "Order not found!", "error");
 
       const orderData = await orderRes.json();
 
@@ -61,7 +89,7 @@ const OrdersPage: React.FC = () => {
         `http://localhost:5005/orders/${orderData.id}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
       if (!deleteRes.ok)
@@ -99,7 +127,7 @@ const OrdersPage: React.FC = () => {
       html: `
         <div style="text-align:left; font-family: 'var(--font-family-serif)'">
           <p><b>Date:</b> ${new Date(
-            order.orderDate || order.createdAt
+            order.orderDate || order.createdAt,
           ).toLocaleString()}</p>
           <p><b>Total:</b> EGP ${Number(order.total ?? 0).toFixed(2)}</p>
           <hr>
@@ -115,7 +143,7 @@ const OrdersPage: React.FC = () => {
                   <p style="margin:0; font-size:13px;">Qty: ${item.quantity} - ${item.price}</p>
                 </div>
               </li>
-            `
+            `,
               )
               .join("")}
           </ul>
@@ -128,7 +156,7 @@ const OrdersPage: React.FC = () => {
   const sortedOrders = [...orders].sort(
     (a, b) =>
       new Date(b.orderDate || b.createdAt || 0).getTime() -
-      new Date(a.orderDate || a.createdAt || 0).getTime()
+      new Date(a.orderDate || a.createdAt || 0).getTime(),
   );
 
   // Pagination logic
@@ -138,7 +166,8 @@ const OrdersPage: React.FC = () => {
   const currentOrders = sortedOrders.slice(indexOfFirstOrder, indexOfLastOrder);
 
   const handlePageChange = (page: number) => setCurrentPage(page);
-  const handleNext = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
+  const handleNext = () =>
+    currentPage < totalPages && setCurrentPage(currentPage + 1);
   const handlePrev = () => currentPage > 1 && setCurrentPage(currentPage - 1);
 
   if (loading) {
@@ -152,9 +181,20 @@ const OrdersPage: React.FC = () => {
   if (orders.length === 0) {
     return (
       <div className="orders-empty">
-        <h2 style={{fontFamily: "var(--font-family-serif)"}}>No orders yet</h2>
-        <p style={{ fontFamily: "var(--font-family-serif)"}}>You haven't placed any orders.</p>
-        <button className="btn text-light" style= {{background: "black", fontFamily: "var(--font-family-serif)" }}onClick={() => navigate("/")}>
+        <h2 style={{ fontFamily: "var(--font-family-serif)" }}>
+          No orders yet
+        </h2>
+        <p style={{ fontFamily: "var(--font-family-serif)" }}>
+          You haven't placed any orders.
+        </p>
+        <button
+          className="btn text-light"
+          style={{
+            background: "black",
+            fontFamily: "var(--font-family-serif)",
+          }}
+          onClick={() => navigate("/")}
+        >
           Go Shopping
         </button>
       </div>
@@ -163,17 +203,23 @@ const OrdersPage: React.FC = () => {
 
   return (
     <div className="orders-container" style={{ backgroundColor: "#fff" }}>
-      <h1 style={{fontFamily: "var(--font-family-serif)"}}>Order History</h1>
-      <p style={{ fontFamily: "var(--font-family-serif)"}}>
+      <h1 style={{ fontFamily: "var(--font-family-serif)" }}>Order History</h1>
+      <p style={{ fontFamily: "var(--font-family-serif)" }}>
         You have {orders.length} order{orders.length !== 1 ? "s" : ""}
       </p>
 
       {currentOrders.map((order) => (
-        <div key={order.id} className="order-card" style={{ fontFamily: "var(--font-family-serif)"}}>
+        <div
+          key={order.id}
+          className="order-card"
+          style={{ fontFamily: "var(--font-family-serif)" }}
+        >
           <div className="order-header">
             <div>
               <h3>Order #{order.id}</h3>
-              <p>{new Date(order.orderDate || order.createdAt).toLocaleString()}</p>
+              <p>
+                {new Date(order.orderDate || order.createdAt).toLocaleString()}
+              </p>
               <p>Total: EGP{Number(order.total ?? 0).toFixed(2)}</p>
             </div>
             <span className={`status ${order.status || "pending"}`}>
@@ -210,7 +256,10 @@ const OrdersPage: React.FC = () => {
             >
               View Details
             </button>
-            <button className="btn shop-btn btn-dark" onClick={() => navigate("/")}>
+            <button
+              className="btn shop-btn btn-dark"
+              onClick={() => navigate("/")}
+            >
               Shop Again
             </button>
             <button
