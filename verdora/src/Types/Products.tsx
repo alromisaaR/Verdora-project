@@ -16,7 +16,7 @@ export interface Products {
   nativeRegion: string;
   lifeCycle: string;
   genus: string;
-  type: string;
+  type?: string;
   climate: string;
   soilType: string;
   wateringNeeds: string;

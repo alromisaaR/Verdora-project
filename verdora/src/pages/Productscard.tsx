@@ -72,11 +72,11 @@ export default function ProductsCard({ product, onClick }: ProductCardProps) {
 
       // add
       const item = {
-        id: product.id,
-        title: product.name ?? product.title ?? "Product",
-        price: product.price ?? product.oldprice ?? "",
-        image: product.image ?? "",
-      };
+  id: product.id,
+  title: product.name ?? "Product",
+  price: parseFloat(product.price) || 0,
+  image: product.image,
+};
 
       const next = [...list, item];
       saveWishlist(next);

@@ -189,9 +189,9 @@ export default function Productsadmin() {
     if (editingProduct) {
       const priceValue = parseFloat(editingProduct.price.replace(" EGP", ""));
       formik.setValues({
-        ...editingProduct,
-        price: priceValue,
-      });
+  ...editingProduct,
+  price: String (priceValue),  
+});
     } else if (newProduct) {
       const numericIds = products
         .map((p) => Number(p.id))
@@ -201,8 +201,8 @@ export default function Productsadmin() {
       const priceValue = parseFloat(newProduct.price.replace(" EGP", ""));
       formik.setValues({
         ...newProduct,
-        id: lastId + 1,
-        price: priceValue,
+        id: String(lastId + 1), 
+        price: String(priceValue),
       });
     }
   }, [editingProduct, newProduct]);
@@ -237,7 +237,7 @@ export default function Productsadmin() {
   }, []);
 
   // delete product
-  const handleDelete = async (productId: number, productName: string) => {
+  const handleDelete = async (productId: string, productName: string) => {
     const result = await Swal.fire({
       title: `Delete "${productName}"?`,
       text: "This action cannot be undone.",
@@ -383,35 +383,35 @@ export default function Productsadmin() {
     );
   };
 
-  // Helper function for max length
-  const getMaxLength = (field: string): number => {
-    const maxLengths: { [key: string]: number } = {
-      name: 100,
-      description: 1000,
-      scientificName: 100,
-      nativeRegion: 100,
-      careTips: 500,
-      review: 200,
-      lifeCycle: 50,
-      genus: 50,
-      type: 50,
-      climate: 50,
-      soilType: 50,
-      wateringNeeds: 50,
-      sunlight: 50,
-      humidity: 50,
-      growthRate: 50,
-      propagation: 50,
-      toxicity: 50,
-      floweringSeason: 50,
-      height: 50,
-      containerType: 50,
-      rate: 10,
-      discount: 10,
-      oldprice: 20,
-    };
-    return maxLengths[field] || 100;
-  };
+  // // Helper function for max length
+  // const getMaxLength = (field: string): number => {
+  //   const maxLengths: { [key: string]: number } = {
+  //     name: 100,
+  //     description: 1000,
+  //     scientificName: 100,
+  //     nativeRegion: 100,
+  //     careTips: 500,
+  //     review: 200,
+  //     lifeCycle: 50,
+  //     genus: 50,
+  //     type: 50,
+  //     climate: 50,
+  //     soilType: 50,
+  //     wateringNeeds: 50,
+  //     sunlight: 50,
+  //     humidity: 50,
+  //     growthRate: 50,
+  //     propagation: 50,
+  //     toxicity: 50,
+  //     floweringSeason: 50,
+  //     height: 50,
+  //     containerType: 50,
+  //     rate: 10,
+  //     discount: 10,
+  //     oldprice: 20,
+  //   };
+  //   return maxLengths[field] || 100;
+  // };
 
   return (
     <>

@@ -106,16 +106,11 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
 
       // Add to wishlist
       const wishlistItem = {
-        id: product.id,
-        title: product.name || "Product",
-        price: parseFloat(product.price) || 0,
-        image:
-          typeof product.image === "string"
-            ? product.image
-            : Array.isArray(product.image) && product.image.length
-              ? product.image[0]
-              : "",
-      };
+  id: product.id,
+  title: product.name || "Product",
+  price: parseFloat(product.price) || 0,
+  image: product.image,
+};
       list.push(wishlistItem);
       saveWishlist(list);
       setIsInWishlist(true);
@@ -178,10 +173,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
     )
     .slice(0, 4);
 
-  const productImages = Array.isArray(product.image)
-    ? product.image
-    : [product.image];
-
+  const productImages = [product.image];
   return (
     <div
       style={{

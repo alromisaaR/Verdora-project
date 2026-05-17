@@ -12,6 +12,7 @@ type Product = {
   light?: string;
   maintenance?: string;
   environment?: string;
+  type?: string;
 };
 
 const PlantQuiz: React.FC = () => {

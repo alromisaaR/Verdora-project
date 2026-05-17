@@ -1,38 +1,19 @@
 import "../styles/global.css"
-import { createClient } from "@supabase/supabase-js"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { Products } from "../Types/Products"
+,import { supabase } from "../SupbaseClient/SupbaseClint";
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: string;
-  bestseller?: boolean;
-  isNew?: boolean;
-  image?: string;
-  rate?: string;
-  category: string;
-  oldprice: string;
-  stock?: number;
-  [key: string]: unknown;
-}
+export type { Products as Product };
 
-export type { Product };
+let cachedProducts: Products[] = [];
 
-let cachedProducts: Product[] = [];
+ 
 
-export default function UseProducts() {
-  const [products, setProducts] = useState<Product[]>(cachedProducts);
-  const [filter, setFilter] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const navigate = useNavigate();
-
+  export default function UseProducts() {
+  const [products, setProducts] = useState<Products[]>(cachedProducts);
+  
   async function getproducts() {
     if (cachedProducts.length > 0) return;
     try {
@@ -42,13 +23,17 @@ export default function UseProducts() {
 
       if (error) throw error;
 
-      const fixedData = (data as Product[]).map(p => ({ ...p, id: String(p.id) }));
+      const fixedData = (data as Products[]).map(p => ({ ...p, id: String(p.id) }));
       cachedProducts = fixedData;
       setProducts(fixedData);
     } catch (error) {
       console.error(error);
     }
   }
+
+   const [filter, setFilter] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const navigate = useNavigate();
 
   const goToDetails = (id: string) => {
     navigate(`/product/${id}`);
@@ -57,6 +42,8 @@ export default function UseProducts() {
   useEffect(() => {
     getproducts();
   }, []);
+
+
 
   let displayedProducts = products;
 
@@ -76,3 +63,4 @@ export default function UseProducts() {
 
   return { displayedProducts, filter, setFilter, searchTerm, setSearchTerm, goToDetails }
 }
+

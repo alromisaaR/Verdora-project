@@ -166,7 +166,7 @@ const Cart: React.FC = () => {
               Remove
             </button> */}
 
-            <p className="circle"  style={{fontSize: "12px"}}onClick={() => dispatch(removeFromCart(item.id))}>X</p>
+            <p className="circle"  style={{fontSize: "12px"}}onClick={() => dispatch(removeFromCart(String(item.id)))}>X</p>
             </div>
           </div>
           

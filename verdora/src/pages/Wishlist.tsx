@@ -57,7 +57,8 @@ const Wishlish: React.FC = () => {
       // Add each wishlist item to cart using Redux dispatch
       items.forEach((item) => {
         const cartItem = {
-          id: item.id,
+          id: String(item.id),
+          title: item.title ||,
           name: item.title || item.name || "Product",
           price: String(item.price || 0),
           image: item.image || "",
