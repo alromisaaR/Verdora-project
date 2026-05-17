@@ -71,10 +71,38 @@ const ExploreProducts: React.FC = () => {
         navigate(`/product/${id}`);
     };
 
-    const handleAddToCart = (product: Product) => {
-        dispatch(addToCart({ product, quantity: 1 }));
-        toast.success(`${product.name} added to cart!`);
-    };
+   const handleAddToCart = (product: Product) => {
+  const fullProduct = {
+    ...product,
+    id: String(product.id),
+    description: "",
+    bestseller: false,
+    oldprice: "",
+    review: "",
+    discount: "",
+    isNew: false,
+    scientificName: "",
+    nativeRegion: "",
+    lifeCycle: "",
+    genus: "",
+    type: "",
+    climate: "",
+    soilType: "",
+    wateringNeeds: "",
+    sunlight: "",
+    humidity: "",
+    growthRate: "",
+    propagation: "",
+    toxicity: "",
+    careTips: "",
+    floweringSeason: "",
+    height: "",
+    containerType: "",
+    stock: Number(product.stock) || 0,
+  };
+  dispatch(addToCart({ product: fullProduct, quantity: 1 }));
+  toast.success(`${product.name} added to cart!`);
+};
 
     const toggleWishlist = (product: any, e: React.MouseEvent) => {
         e.preventDefault();

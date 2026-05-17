@@ -59,15 +59,41 @@ const LowestProducts: React.FC = () => {
         staleTime: 1000 * 60 * 5,
     });
 
-    const handleAddToCart = (product: Product) => {
-        if (!product.stock || product.stock === 0) {
-            toast.error(`${product.name} is out of stock!`);
-            return;
-        }
-        dispatch(addToCart({ product, quantity: 1 }));
-        toast.success(`${product.name} added to cart!`);
-    };
-
+   const handleAddToCart = (product: Product) => {
+  if (!product.stock || product.stock === 0) {
+    toast.error(`${product.name} is out of stock!`);
+    return;
+  }
+  const fullProduct = {
+    ...product,
+    id: String(product.id),
+    description: "",
+    bestseller: false,
+    oldprice: "",
+    review: "",
+    discount: "",
+    isNew: false,
+    scientificName: "",
+    nativeRegion: "",
+    lifeCycle: "",
+    genus: "",
+    type: "",
+    climate: "",
+    soilType: "",
+    wateringNeeds: "",
+    sunlight: "",
+    humidity: "",
+    growthRate: "",
+    propagation: "",
+    toxicity: "",
+    careTips: "",
+    floweringSeason: "",
+    height: "",
+    containerType: "",
+  };
+  dispatch(addToCart({ product: fullProduct, quantity: 1 }));
+  toast.success(`${product.name} added to cart!`);
+};
     const NextArrow = (props: any) => {
         const { onClick } = props;
         return (
