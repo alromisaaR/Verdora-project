@@ -2,7 +2,7 @@ import "../styles/global.css"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Products } from "../Types/Products"
-,import { supabase } from "../SupbaseClient/SupbaseClint";
+import { supabase } from "../SupbaseClient/SupbaseClint";
 
 
 export type { Products as Product };

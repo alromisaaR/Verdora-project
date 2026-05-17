@@ -58,7 +58,7 @@ const Wishlish: React.FC = () => {
       items.forEach((item) => {
         const cartItem = {
           id: String(item.id),
-          title: item.title ||,
+          title: item.title || "Product",
           name: item.title || item.name || "Product",
           price: String(item.price || 0),
           image: item.image || "",
