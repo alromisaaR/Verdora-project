@@ -13,7 +13,7 @@ It helps users explore, choose, and buy plants that fit their lifestyle — usin
 - 🧑‍💻 **Admin Dashboard** – Manage products, categories, Reports, orders, and users.  
 - 📱 **Responsive Design** – Works on mobile, tablet, and desktop.  
 - ⚙️ **Pagination** – Clean navigation through large product lists.  
-- 🔐 **Authentication** – Login, signup, and local session management.
+- 🔐 **Authentication** – Login, signup, and session management.
 
 ---
 
@@ -22,7 +22,7 @@ It helps users explore, choose, and buy plants that fit their lifestyle — usin
 | Category | Technologies |
 |-----------|---------------|
 | **Frontend** | React, TypeScript, Redux Toolkit, React Query, Bootstrap |
-| **Backend / API** | JSON Server (Mock API) |
+| **Backend / API** | Supabase (PostgreSQL) |
 | **Routing** | React Router |
 | **State Management** | Redux Toolkit |
 | **Version Control** | Git + GitHub |
@@ -45,14 +45,12 @@ Run the development server:
 npm run dev
 ```
 
-For the mock API (JSON Server):
+Environment Variables Config
+Create a .env file in the root directory and add your Supabase credentials:5
 
-```bash
-npx json-server --watch db.json --port 5005
-```
 
-Then open the app at [http://localhost:5173](http://localhost:5173).
-
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ---
 
 ## 🧩 Folder Structure
@@ -69,7 +67,6 @@ verdora/
 │   ├── styles/
 │   └── App.tsx
 │
-├── db.json
 ├── package.json
 └── README.md
 ```
@@ -81,9 +78,10 @@ verdora/
 | Name | Role |
 |------|------|
 | **Toka Elqersh** | Team Leader - Frontend Developer|
+| **Alromisaa Reda** | Frontend Designer |
 | **Omnia Fathy** | Frontend Developer |
 | **Ahmed  Hazem** | Frontend Developer |
-| **Alromisaa Reda** | Frontend Designer |
+
 
 ---
 
