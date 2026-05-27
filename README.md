@@ -34,7 +34,7 @@ It helps users explore, choose, and buy plants that fit their lifestyle — usin
 Clone the project and install dependencies:
 
 ```bash
-git clone https://github.com/ahazem256/React-project.git
+git clone https://github.com/alromisaaR/Verdora-project.git
 cd verdora
 npm install
 ```
