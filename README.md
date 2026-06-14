@@ -4,15 +4,22 @@
 Verdora is a modern, eco-inspired e-commerce web app for plant lovers.  
 It helps users explore, choose, and buy plants that fit their lifestyle — using an interactive **Plant Finder Quiz**, personalized recommendations, and a smooth shopping experience.
 
-My Core Frontend & Dashboard Contributions:
+🚀 My Core Frontend & Dashboard Contributions:
 
 • Comprehensive UI Refactoring: Spearheaded the visual overhaul and global UI enhancements across the entire platform. Standardized layouts, optimized styling, and enforced strict design consistency to deliver a polished, responsive, and seamless user experience.
+
 • Secure User Authentication (Register): Engineered the complete User Registration flow from scratch (UI & Logic). Formulated clean input validation and handled asynchronous state updates to ensure a seamless onboarding experience.
+
 • Unified Product Feed & Categorization: Engineered a scalable, multi-category single product listing page. Built dynamic layout adaptations that programmatically filter and render custom UI states across 4 distinct plant categories.
+
 • Commercial Visual Badges: Developed and integrated promotional badge states ("Sale", "New", "Bestseller") into the product grid logic to enhance click-through rates based on real-time backend values.
+
 • Full CRUD Admin Dashboard: Built the administrative Products Management hub from scratch, featuring dynamic Modals for creating and editing plant items.
+
 • Enterprise Form Validation: Formulated complex data-integrity rules using Formik and Yup inside the dashboard, managing dozens of advanced plant attributes (e.g., scientific name, toxicity, propagation, humidity, and custom base64 image strings).
+
 • Hybrid Data Fetching & Syncing: Orchestrated data retrieval operations integrating both Supabase Client Queries for reading data and Axios REST API calls for executing full CRUD operations, coupled with precise cache/state resetting.
+
 • Live Filter, Search, and Pagination: Programmed advanced UI control systems, integrating sanitized real-time text search, active/low stock status filtering, and dynamic smooth-scroll pagination.
 
 ## ✨ Features
