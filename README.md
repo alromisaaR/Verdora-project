@@ -6,12 +6,20 @@ It helps users explore, choose, and buy plants that fit their lifestyle — usin
 
 🚀 My Core Frontend & Dashboard Contributions:
 
-• UI Enhancement: Upgraded and refactored the UI across the entire platform using Bootstrap to ensure clean layouts, responsive design, and a consistent look and feel.• User Registration: Built the complete Register page (UI and Logic), implementing client-side validation and managing user authentication states.
+• UI Enhancement: Upgraded and refactored the UI across the entire platform using Bootstrap to ensure clean layouts, responsive design, and a consistent look and feel.
+
+• User Registration: Built the complete Register page (UI and Logic), implementing client-side validation and managing user authentication states.
+
 • Dynamic Product Grid: Developed a single product listing page that dynamically filters and displays plants across 4 different categories based on backend data.
+
 • Promotional Badges: Added visual badges ("Sale", "New", "Bestseller") to the product cards determined by real-time database values.
+
 • Admin CRUD Dashboard: Created the products management hub from scratch, using dynamic modals to handle Add, Edit, and Delete operations for plant items.
+
 • Form Validation: Handled complex forms using Formik and Yup to validate detailed plant data (like scientific names, toxicity, and image strings) before submission.
+
 • Backend Integration & Database: Integrated Supabase for user authentication and managing full CRUD operations, ensuring database synchronization and clean state updates.
+
 • Live Filters & Pagination: Programmed real-time search, stock status filtering, and dynamic pagination for a smoother browsing experience.
 
 ## ✨ Features
