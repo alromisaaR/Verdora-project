@@ -14,7 +14,7 @@ It helps users explore, choose, and buy plants that fit their lifestyle — usin
 
 • Promotional Badges: Added visual badges ("Sale", "New", "Bestseller") to the product cards determined by real-time database values.
 
-• Admin CRUD Dashboard: Created the products management hub from scratch, using dynamic modals to handle Add, Edit, and Delete operations for plant items.
+• Admin Dashboard (Product page): Created the products management hub from scratch, using dynamic modals to handle Add, Edit, and Delete operations for plant items.
 
 • Form Validation: Handled complex forms using Formik and Yup to validate detailed plant data (like scientific names, toxicity, and image strings) before submission.
 
